@@ -1,4 +1,5 @@
-[![Build Status](https://drone.io/github.com/winfinit/aamvajs/status.png)](https://drone.io/github.com/winfinit/aamvajs/latest)
+[![Drone Build Status](https://drone.io/github.com/winfinit/aamvajs/status.png)](https://drone.io/github.com/winfinit/aamvajs/latest)
+[![Travis Build Status](https://travis-ci.org/simlay/aamvajs.svg?branch=master)](https://travis-ci.org/simlay/aamvajs)
 
 # aamva.js
 
@@ -49,8 +50,8 @@ and I would love to add support or fix things that are not working yet**
   console.log("DOB:",res2.birthday()); /* Thu Jan 08 1987 00:00:00 GMT-0500 (EST) */
   console.log("Entire object", res2);
 
-/* 
-  output: 
+/*
+  output:
         { state: 'FL',
           city: 'DELRAY BEACH',
           name: [Function],
