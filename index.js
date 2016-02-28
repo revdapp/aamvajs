@@ -386,6 +386,7 @@ var pdf417 = function(data) {
                 )
             );
         },
+        "dob": parsedData.DBB,
         "dl_overflow": undefined,
         "cds_version": undefined,
         "jurisdiction_version": undefined,
