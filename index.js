@@ -1,12 +1,11 @@
 
 
-var parse = function(data) {
-    data = data.replace(/\n/, "");
+var parse = function(data, separator) {
     // replace spaces with regular space
-    data = data.replace(/\s/g, " ");
+    //data = data.replace(/\s/g, " ");
 
     if ( /^@/.test(data) === true ) {
-        return pdf417(data);
+        return pdf417(data, separator);
     } else if ( /^%/.test(data) === true  ) {
         return stripe(data);
     } else {
@@ -15,7 +14,7 @@ var parse = function(data) {
 };
 
 var stripe = function(data) {
-    data = data.replace(/\n/, "");
+    //data = data.replace(/\n/, "");
     // replace spaces with regular space
     data = data.replace(/\s/g, " ");
     var track = data.match(/(.*?\?)(.*?\?)(.*?\?)/);
@@ -96,270 +95,153 @@ var stripe = function(data) {
     };
 };
 
-var pdf417 = function(data) {
-    data = data.replace(/\n/, "");
-    // replace spaces with regular space
-    data = data.replace(/\s/g, " ");
+function getPdf417Parsed(data, separator) {
+
+    if(!separator) {
+        separator = '\n';
+    }
 
     // get version of aamva (before 2000 or after)
-    var version = data.match(/[A-Z ]{5}\d{6}(\d{2})/);
-
-
-
-    var parseRegex;
-
+    var versionMatch = data.match(/ANSI \d{6}(\d{2})/);
     /* version 01 year 2000 */
-    if ( Number(version[1]) === 1 ) {
-        parseRegex = new RegExp(
-            '(DAQ.*?)?' + // Drivers license number
-            '(DAA.*?)?' + // Driver License Name
-            '(DAG.*?)?' + // Driver Mailing Street Address
-            '(DAI.*?)?' + // Driver Mailing City
-            '(DAJ.*?)?' + // Driver Mailing Jurisdiction Code
-            '(DAK.*?)?' + // Driver Mailing Postal Code
-            '(DAQ.*?)?' + // Driver License/ID Number
-            '(DAR.*?)?' + // Driver License Classification Code
-            '(DAS.*?)?' + // Driver License Restriction Code
-            '(DAT.*?)?' + // Driver License Endorsements Code
-            '(DBA.*?)?' + // Driver License Expiration Date
-            '(DBB.*?)?' + // Date of Birth
-            '(DBC.*?)?' + // Driver Sex
-            '(DBD.*?)'    // Driver License or ID Document Issue Date
-            /* optional
-            '(DAU.*?)?' + // Height (FT/IN)
-            '(DAW.*?)?' + // Weight (LBS)
-            '(DAY.*?)?' + // Eye Color
-            '(DAZ.*?)?' + // Hair Color
-            '(DBK.*?)?' + // Social Security Number
-            '(PAA.*?)?' + // Driver Permit Classification Code
-            '(PAB.*?)?' + // Driver Permit Expiration Date
-            '(PAC.*?)?' + // Permit Identifier
-            '(PAD.*?)?' + // Driver Permit Issue Date
-            '(PAE.*?)?' + // Driver Permit Restriction Code
-            '(PAF.*?)?' + // Driver Permit Endorsement Code
-            '(DAB.*?)?' + // Driver Last Name
-            '(DAC.*?)?' + // Driver First Name
-            '(DAD.*?)?' + // Driver Middle Name or Initial
-            '(DAE.*?)?' + // Driver Name Suffix
-            '(DAF.*?)?' + // Driver Name Prefix
-            '(DAH.*?)?' + // Driver Mailing Street Address 2
-            '(DAL.*?)?' + // Driver Residence Street Address 1
-            '(DAM.*?)?' + // Driver Residence Street Address 2
-            '(DAN.*?)?' + // Driver Residence City
-            '(DAO.*?)?' + // Driver Residence Jurisdiction Code
-            '(DAP.*?)?' + // Driver Residence Postal Code
-            '(DAV.*?)?' + // Height (CM)
-            '(DAX.*?)?' + // Weight (KG)
-            '(DBE.*?)?' + // Issue Timestamp
-            '(DBF.*?)?' + // Number of Duplicates
-            '(DBG.*?)?' + // Medical Indicator/Codes
-            '(DBH.*?)?' + // Organ Donor
-            '(DBI.*?)?' + // Non-Resident Indicator
-            '(DBJ.*?)?' + // Unique Customer Identifier
-            '(DBL.*?)?' + // Driver "AKA" Date Of Birth
-            '(DBM.*?)?' + // Driver "AKA" Social Security Number
-            '(DBN.*?)?' + // Driver "AKA" Name
-            '(DBO.*?)?' + // Driver "AKA" Last Name
-            '(DBP.*?)?' + // Driver "AKA" First Name
-            '(DBQ.*?)?' + // Driver "AKA" Middle Name
-            '(DBR.*?)?' + // Driver "AKA" Suffix
-            '(DBS.*?)?'   // Driver "AKA" Prefix
-            */
-        );
-    }
-    /* version 02 year 2003 */
-    else if ( Number(version[1]) === 2) {
-        parseRegex = new RegExp(
-            '(DCA.*?)?' + // Jurisdiction-specific vehicle class
-            '(DCB.*?)?' + // Jurisdiction-specific restriction codes
-            '(DCD.*?)?' + // Jurisdiction-specific endorsement codes
-            '(DBA.*?)?' + // Document Expiration Date
-            '(DCS.*?)?' + // Customer Family Name
-
-            '(DCT.*?)?' + // Customer Given Names
-
-            '(DCU.*?)?' + // Name Suffix
-            '(DBD.*?)?' + // Document Issue Date
-            '(DBB.*?)?' + // Date of Birth
-
-            '(DBC.*?)?' + // Physical Description – Sex
-            '(DAY.*?)?' + // Physical Description – Eye Color
-            '(DAU.*?)?' + // Physical Description – Height
-            '(DCE.*?)?' + // Physical Description – Weight Range
-
-            '(DAG.*?)?' + // Address – Street 1
-            '(DAI.*?)?' + // Address – City
-            '(DAJ.*?)?' + // Address – Jurisdiction Code
-            '(DAK.*?)?' + // Address – Postal Code
-            '(DAQ.*?)?' + // Customer ID Number
-            '(DCF.*?)?' + // Document Discriminator
-            '(DCG.*?)?' + // Country Identification
-            '(DCH.*?)?'    // Federal Commercial Vehicle Codes
-
-            /* optional elements
-            '(DAH.*?)?' + // Address – Street 2
-            '(DAZ.*?)?' + // Hair color
-            '(DCI.*?)?' + // Place of birth
-            '(DCJ.*?)?' + // Audit information
-            '(DCK.*?)?' + // Inventory control number
-            '(DBN.*?)?' + // Alias / AKA Family Name
-            '(DCL.*?)?' + // Race / ethnicity
-
-            '(DCM.*?)?' + // Standard vehicle classification
-            '(DCN.*?)?' + // Standard endorsement code
-            '(DCO.*?)?' + // Standard restriction code
-            '(DCP.*?)?' + // Jurisdiction- specific vehicle classification description
-            '(DCQ.*?)?' + // Jurisdiction- specific endorsement code description
-            '(DCR.*?)?'  // Jurisdiction- specific restriction code description
-            */
-        );
-    }
-    /* version 03 year 2005 */
-    else if ( Number(version[1]) === 3) {
-        parseRegex = new RegExp(
-            '(DCA.*?)' + // Jurisdiction-specific vehicle class
-            '(DCB.*?)' + // Jurisdiction-specific restriction codes
-            '(DCD.*?)' + // Jurisdiction-specific endorsement codes
-            '(DBA.*?)' + // Document Expiration Date
-            '(DCS.*?)' + // Customer Family Name
-            '(DCT.*?)' + // Customer Given Names
-            '(DBD.*?)' + // Document Issue Date
-            '(DBB.*?)' + // Date of Birth
-            '(DBC.*?)' + // Physical Description – Sex
-            '(DAY.*?)' + // Physical Description – Eye Color
-            '(DAU.*?)' + // Physical Description – Height
-            '(DAG.*?)' + // Address – Street 1
-            '(DAI.*?)' + // Address – City
-            '(DAJ.*?)' + // Address – Jurisdiction Code
-            '(DAK.*?)' + // Address – Postal Code
-            '(DAQ.*?)' + // Customer ID Number
-            '(DCF.*?)' + // Document Discriminator
-            '(DCG.*?)' + // Country Identification
-            '(DCH.*?)'   // Federal Commercial Vehicle Codes
-            /* optional elements
-            + '(DAH.*?)?' + // Address – Street 2
-            '(DAZ.*?)?' + // Hair color
-            '(DCI.*?)?' + // Place of birth
-            '(DCJ.*?)?' + // Audit information
-            '(DCK.*?)?' + // Inventory control number
-            '(DBN.*?)?' + // Alias / AKA Family Name
-            '(DBG.*?)?' + // Alias / AKA Given Name
-            '(DBS.*?)?' + // Alias / AKA Suffix Name
-            '(DCU.*?)?' + // Name Suffix
-            '(DCE.*?)?' + // Physical Description – Weight Range
-            '(DCL.*?)?' + // Race / ethnicity
-            '(DCM.*?)?' + // Standard vehicle classification
-            '(DCN.*?)?' + // Standard endorsement code
-            '(DCO.*?)?' + // Standard restriction code
-            '(DCP.*?)?' + // Jurisdiction- specific vehicle classification description
-            '(DCQ.*?)?' + // Jurisdiction- specific endorsement code description
-            '(DCR.*?)?'  // Jurisdiction- specific restriction code description
-            */
-        );
-    }
-    /* version 07 year 2012 */
-    else if ( Number(version[1]) === 7 ) {
-        parseRegex = new RegExp(
-            '(DCA.*?)?' + // Jurisdiction-specific vehicle class
-            '(DCB.*?)?' + // Jurisdiction-specific restriction codes
-            '(DCD.*?)?' + // Jurisdiction-specific endorsement codes
-            '(DBA.*?)?' + // Document Expiration Date
-            '(DCS.*?)?' + // Customer Family Name
-            '(DAC.*?)?' + // Customer First Name
-            '(DAD.*?)?' + // Customer Middle Name(s)
-            '(DBD.*?)?' + // Document Issue Date
-            '(DBB.*?)?' + // Date of Birth
-            '(DBC.*?)?' + // Physical Description – Sex
-            '(DAY.*?)?' + // Physical Description – Eye Color
-            '(DAU.*?)?' + // Physical Description – Height
-            '(DAG.*?)?' + // Address – Street 1
-            '(DAI.*?)?' + // Address – City
-            '(DAJ.*?)?' + // Address – Jurisdiction Code
-            '(DAK.*?)?' + // Address – Postal Code
-            '(DAQ.*?)?' + // Customer ID Number
-            '(DCF.*?)?' + // Document Discriminator
-            '(DCG.*?)?' + // Country Identification
-            '(DDE.*?)?' + // Family name truncation
-            '(DDF.*?)?' + // First name truncation
-            '(DDG.*?)'    // Middle name truncation
-            /* optional elements
-            '(DAH.*?)?' + // Address – Street 2
-            '(DAZ.*?)?' + // Hair color
-            '(DCI.*?)?' + // Place of birth
-            '(DCJ.*?)?' + // Audit information
-            '(DCK.*?)?' + // Inventory control number
-            '(DBN.*?)?' + // Alias / AKA Family Name
-            '(DBG.*?)?' + // Alias / AKA Given Name
-            '(DBS.*?)?' + // Alias / AKA Suffix Name
-            '(DCU.*?)?' + // Name Suffix
-            '(DCE.*?)?' + // Physical Description – Weight Range
-            '(DCL.*?)?' + // Race / ethnicity
-            '(DCM.*?)?' + // Standard vehicle classification
-            '(DCN.*?)?' + // Standard endorsement code
-            '(DCO.*?)?' + // Standard restriction code
-            '(DCP.*?)?' + // Jurisdiction- specific vehicle classification description
-            '(DCQ.*?)?' + // Jurisdiction- specific endorsement code description
-            '(DCR.*?)?' + // Jurisdiction- specific restriction code description
-            '(DDA.*?)?' + // Compliance Type
-            '(DDB.*?)?' + // Card Revision Date
-            '(DDC.*?)?' + // HAZMAT Endorsement Expiration Date
-            '(DDD.*?)?' + // Limited Duration Document Indicator
-            '(DAW.*?)?' + // Weight (pounds)
-            '(DAX.*?)?' + // Weight (kilograms)
-            '(DDH.*?)?' + // Under 18 Until
-            '(DDI.*?)?' + // Under 19 Until
-            '(DDJ.*?)?' + // Under 21 Until
-            '(DDK.*?)?' + // Organ Donor Indicator
-            '(DDL.*?)?'   // Veteran Indicator
-            */
-        );
-    }
-    else {
+    if(!versionMatch) {
         console.log('unable to get version');
-        // probably not a right parse...
+        return;
     }
 
     var parsedData = {};
-    var res = data.match(parseRegex);
 
-    for (var i = 1; i < res.length; i++ ) {
-        if ( res[i] !== undefined ) {
-            parsedData[ String(res[i]).substring(0,3) ] = res[i].substring(3).trim();
+    var version = Number(versionMatch[1]);
+    parsedData.version = version;
+
+    var parseRegex;
+    var fields = [
+        'DAA',
+        'DAB',
+        'DAC',
+        'DAD',
+        'DAE',
+        'DAF',
+        'DAG',
+        'DAH',
+        'DAI',
+        'DAJ',
+        'DAK',
+        'DAL',
+        'DAM',
+        'DAN',
+        'DAO',
+        'DAP',
+        'DAQ',
+        'DAR',
+        'DAS',
+        'DAT',
+        'DAU',
+        'DAV',
+        'DAW',
+        'DAX',
+        'DAY',
+        'DAZ',
+        'DBA',
+        'DBB',
+        'DBC',
+        'DBD',
+        'DBE',
+        'DBF',
+        'DBG',
+        'DBH',
+        'DBI',
+        'DBJ',
+        'DBK',
+        'DBL',
+        'DBM',
+        'DBN',
+        'DBO',
+        'DBP',
+        'DBQ',
+        'DBR',
+        'DBS',
+        'DCA',
+        'DCB',
+        'DCD',
+        'DCE',
+        'DCF',
+        'DCG',
+        'DCH',
+        'DCI',
+        'DCJ',
+        'DCK',
+        'DCL',
+        'DCM',
+        'DCN',
+        'DCO',
+        'DCP',
+        'DCQ',
+        'DCR',
+        'DCS',
+        'DCT',
+        'DCU',
+        'DDA',
+        'DDB',
+        'DDC',
+        'DDD',
+        'DDE',
+        'DDF',
+        'DDG',
+        'DDH',
+        'DDI',
+        'DDJ',
+        'DDK',
+        'DDL',
+        'PAA',
+        'PAB',
+        'PAC',
+        'PAD',
+        'PAE',
+        'PAF'
+    ];
+
+    for (var i = 0; i < fields.length - 1; i++) {
+        var regex = new RegExp(fields[i] + '[^' + separator + ']+' + separator);
+        var match = regex.exec(data);
+        if(match){
+            if(match[0].slice(3, match[0].length)) {
+                parsedData[fields[i]] = match[0].slice(3, match[0].length - 1).trim();
+            }
         }
     }
 
-    switch( Number(version[1]) ) {
-        case 1: {
-            // version one joining all of the names in one string
-            var name = parsedData.DAA.split(',');
-            parsedData.DCS = name[0];
-            parsedData.DAC = name[1];
-            parsedData.DAD = name[2];
+    // version 3 putting middle and first names in the same field
+    if(parsedData.hasOwnProperty('DCT')) {
+        var name = parsedData.DCT.split(',');
+        parsedData.DAC = name[0]; // first name
+        parsedData.DAD = name[1] ? name[1] : '' ; // middle name
+    }
 
-            // drivers license class
-            parsedData.DCA = parsedData.DAR;
+    if(parsedData.hasOwnProperty('DAA')) {
+        var name = parsedData.DAA.split(',');
+        parsedData.DCS = name[0];
+        parsedData.DAC = name[1];
+        parsedData.DAD = name[2];
+    }
 
-            // date on 01 is CCYYMMDD while on 07 MMDDCCYY
-            parsedData.DBB = (
-                parsedData.DBB.substring(4,6) +  // month
+    if(parsedData.hasOwnProperty('DAR')) {
+        parsedData.DCA = parsedData.DAR;
+    }
+
+    if(Number(version) === 1) {
+        // date on 01 is CCYYMMDD while on 07 MMDDCCYY
+        parsedData.DBB = (
+            parsedData.DBB.substring(4,6) +  // month
                 parsedData.DBB.substring(6,8) +  // day
                 parsedData.DBB.substring(0,4)    // year
-            );
-            break;
-        }
-        case 3: {
-            // version 3 putting middle and first names in the same field
-            var name = parsedData.DCT.split(',');
-            parsedData.DAC = name[0]; // first name
-            parsedData.DAD = name[1]; // middle name
-            break;
-        }
-        default: {
-            console.log("no version matched");
-            break;
-        }
+        );
     };
+    return parsedData;
+};
 
+var pdf417 = function(data, separator) {
+    var parsedData = getPdf417Parsed(data, separator);
     var rawData = {
         "state": parsedData.DAJ,
         "city": parsedData.DAI,
@@ -372,7 +254,8 @@ var pdf417 = function(data) {
         },
         "address": parsedData.DAG,
         "iso_iin": undefined,
-        "dl": parsedData.DAQ,
+        // Because Michigican puts spaces in their license numbers. Why...
+        "dl": parsedData.DAQ.replace(' ', ''),
         "expiration_date": parsedData.DBA,
         "birthday": function() {
             var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
@@ -389,6 +272,7 @@ var pdf417 = function(data) {
         "dob": parsedData.DBB,
         "dl_overflow": undefined,
         "cds_version": undefined,
+        "aamva_version": parsedData.version,
         "jurisdiction_version": undefined,
         "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
         "class": parsedData.DCA,
@@ -400,7 +284,7 @@ var pdf417 = function(data) {
                     return "MALE";
                     break;
                 case 2:
-                    return "FAMALE";
+                    return "FEMALE";
                     break;
                 default:
                     return "MISSING/INVALID";
@@ -425,3 +309,4 @@ var pdf417 = function(data) {
 module.exports.parse = parse;
 module.exports.stripe = stripe;
 module.exports.pdf417 = pdf417;
+module.exports.getPdf417Parsed = getPdf417Parsed;
