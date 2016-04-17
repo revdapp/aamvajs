@@ -229,7 +229,7 @@ function getPdf417Parsed(data, separator) {
         parsedData.DCA = parsedData.DAR;
     }
 
-    if(Number(version) === 1) {
+    if(Number(version) === 1 && parsedData.hasOwnProperty('DBB')) {
         // date on 01 is CCYYMMDD while on 07 MMDDCCYY
         parsedData.DBB = (
             parsedData.DBB.substring(4,6) +  // month
