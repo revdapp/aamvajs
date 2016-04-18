@@ -217,6 +217,9 @@ function getPdf417Parsed(data, separator) {
         parsedData.DAC = name[0]; // first name
         parsedData.DAD = name[1] ? name[1] : '' ; // middle name
     }
+    if(parsedData.hasOwnProperty('DAQ')) {
+        parsedData.DAQ = parsedData.DAQ.replace(' ', '');
+    }
 
     if(parsedData.hasOwnProperty('DAA')) {
         var name = parsedData.DAA.split(',');
