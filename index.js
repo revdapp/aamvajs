@@ -240,6 +240,10 @@ function getPdf417Parsed(data, separator) {
                 parsedData.DBB.substring(0,4)    // year
         );
     };
+    if(Number(version) === 1 && parsedData.hasOwnProperty('DAL')) {
+        // Because fuck oregon.
+        parsedData.DAG = parsedData.DAG || parsedData.DAL;
+    }
     return parsedData;
 };
 
