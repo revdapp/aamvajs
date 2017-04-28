@@ -283,9 +283,9 @@ var pdf417 = function(data, separator) {
         "address": parsedData.DAG,
         "iso_iin": undefined,
         // Because Michigican puts spaces in their license numbers. Why...
-        // TODO (remove comment) "dl": parsedData.DAQ.replace(' ', ''),
+        "dl": parsedData.DAQ.replace(' ', ''),
         "expiration_date": parsedData.DBA,
-        /*TODO (remove comment) "birthday": function() {
+        "birthday": function() {
          var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
          dob[1] = parseInt(dob[1]);
          dob[2] = parseInt(dob[2]);
@@ -296,13 +296,13 @@ var pdf417 = function(data, separator) {
          Date.UTC(dob[3], dob[1], dob[2])
          )
          );
-         },*/
+         },
         "dob": parsedData.DBB,
         "dl_overflow": undefined,
         "cds_version": undefined,
         "aamva_version": parsedData.version,
         "jurisdiction_version": undefined,
-        // TODO (remove comment) "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
+        "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
         "class": parsedData.DCA,
         "restrictions": undefined,
         "endorsments": undefined,
@@ -325,7 +325,7 @@ var pdf417 = function(data, separator) {
         "eye_color": undefined,
         "misc": undefined,
         "id": function(){
-            // TODO (remove comment) return parsedData.DAQ.replace(/[^A-ZA-Z0-9]/g, "");
+            return parsedData.DAQ.replace(/[^A-ZA-Z0-9]/g, "");
         }
     };
 
@@ -341,7 +341,7 @@ console.log("First name:",res2.name().first); /* JOHN */
 console.log("Last name:",res2.name().last); /* DOE */
 console.log("Middle name:",res2.name().middle); /* "" */
 console.log("Sex:",res2.sex()); /* MALE, FEMALE, MISSING/INVALID */
-// TODO (remove comment) console.log("DOB:",res2.birthday()); /* Thu Jan 08 1987 00:00:00 GMT-0500 (EST) */
+console.log("DOB:",res2.birthday()); /* Thu Jan 08 1987 00:00:00 GMT-0500 (EST) */
 console.log("Entire object", res2);
 
 
