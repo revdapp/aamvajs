@@ -9,7 +9,7 @@ var parse = function(data, separator) {
     } else if ( /^%/.test(data) === true  ) {
         return stripe(data);
     } else {
-        console.log('couldnt identify format');
+        console.log('Couldn\'t identify format');
     }
 };
 
@@ -44,9 +44,9 @@ var stripe = function(data) {
 
             if (dob[2] === 99) {
                 /* FL decided to reverse 2012 aamva spec, 99 means here
-                    that dob month === to expiration month, it should be
-                    opposite
-                    */
+                 that dob month === to expiration month, it should be
+                 opposite
+                 */
                 var exp_dt = res2[5].match(/(\d{2})(\d{2})/);
                 dob[2] = parseInt(exp_dt[2]);
             }
@@ -67,7 +67,7 @@ var stripe = function(data) {
                     return "MALE";
                     break;
                 case 2:
-                    return "FAMALE";
+                    return "FEMALE";
                     break;
                 default:
                     return "MISSING/INVALID";
@@ -201,15 +201,33 @@ function getPdf417Parsed(data, separator) {
         'PAF'
     ];
 
-    for (var i = 0; i < fields.length - 1; i++) {
-        var regex = new RegExp(fields[i] + '[^' + separator + ']+' + separator);
+    for (var i = 0; i <= fields.length - 1; i++) {
+        //var regex = new RegExp(fields[i] + '[^' + separator + ']+' + separator);
+        //console.log("Field is: " + fields[i]);
+        var regex = new RegExp('(' + fields[i] + '[0-9a-zA-z ]+' + ')' + '+');
         var match = regex.exec(data);
+
+        if(match != null) {
+            console.log();
+            console.log("regex is: " + regex);
+            console.log("***MATCHED: " + match);
+        } else {
+            console.log(regex + " -> not found");
+        }
+
         if(match){
+            // TODO: FIX THIS
+            console.log("Match[0] is " + match[0]);
+
             if(match[0].slice(3, match[0].length)) {
-                parsedData[fields[i]] = match[0].slice(3, match[0].length - 1).trim();
+                //parsedData[fields[i]] = match[0].slice(3, match[0].length - 1).trim();
+                parsedData[fields[i]] = match[0].slice(3, match[0].length).trim();
+                console.log("NEW parse is: " + parsedData[fields[i]] );
             }
         }
     }
+
+    console.log("Parsed data is: " + parsedData);
 
     // version 3 putting middle and first names in the same field
     if(parsedData.hasOwnProperty('DCT')) {
@@ -237,8 +255,8 @@ function getPdf417Parsed(data, separator) {
         // date on 01 is CCYYMMDD while on 07 MMDDCCYY
         parsedData.DBB = (
             parsedData.DBB.substring(4,6) +  // month
-                parsedData.DBB.substring(6,8) +  // day
-                parsedData.DBB.substring(0,4)    // year
+            parsedData.DBB.substring(6,8) +  // day
+            parsedData.DBB.substring(0,4)    // year
         );
     };
     if(Number(version) === 1 && parsedData.hasOwnProperty('DAL')) {
@@ -249,6 +267,8 @@ function getPdf417Parsed(data, separator) {
 };
 
 var pdf417 = function(data, separator) {
+    console.log("DATA IS: " + data);
+    console.log("SEPARATOR IS: " + separator);  //undefined
     var parsedData = getPdf417Parsed(data, separator);
     var rawData = {
         "state": parsedData.DAJ,
@@ -263,26 +283,26 @@ var pdf417 = function(data, separator) {
         "address": parsedData.DAG,
         "iso_iin": undefined,
         // Because Michigican puts spaces in their license numbers. Why...
-        "dl": parsedData.DAQ.replace(' ', ''),
+        // TODO (remove comment) "dl": parsedData.DAQ.replace(' ', ''),
         "expiration_date": parsedData.DBA,
-        "birthday": function() {
-            var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
-            dob[1] = parseInt(dob[1]);
-            dob[2] = parseInt(dob[2]);
-            dob[3] = parseInt(dob[3]);
+        /*TODO (remove comment) "birthday": function() {
+         var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
+         dob[1] = parseInt(dob[1]);
+         dob[2] = parseInt(dob[2]);
+         dob[3] = parseInt(dob[3]);
 
-            return (
-                new Date(
-                    Date.UTC(dob[3], dob[1], dob[2])
-                )
-            );
-        },
+         return (
+         new Date(
+         Date.UTC(dob[3], dob[1], dob[2])
+         )
+         );
+         },*/
         "dob": parsedData.DBB,
         "dl_overflow": undefined,
         "cds_version": undefined,
         "aamva_version": parsedData.version,
         "jurisdiction_version": undefined,
-        "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
+        // TODO (remove comment) "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
         "class": parsedData.DCA,
         "restrictions": undefined,
         "endorsments": undefined,
@@ -305,13 +325,24 @@ var pdf417 = function(data, separator) {
         "eye_color": undefined,
         "misc": undefined,
         "id": function(){
-            return parsedData.DAQ.replace(/[^A-ZA-Z0-9]/g, "");
+            // TODO (remove comment) return parsedData.DAQ.replace(/[^A-ZA-Z0-9]/g, "");
         }
     };
 
     return rawData;
 };
 
+
+var barcode_data = '@ANSI 636045030002DL00410231ZW02720059DLDCANONE\nDCBNONE\nDCDNONE\nDBA11282017\nDCSHELLE\nDCTKYLE JOSEPH\nDCU\nDBD11202012\nDBB11281991\nDBC1\nDAYBLU\nDAU072 in\n6867694\nDAG4107 SW AUSTIN ST\nDAISEATTLE\nDAJWA\nDAK981362109  \nDAQHELLEKJ096Q8\nDCFHELLEKJ096Q832123253H1601\nDCGUSA\nDCHNONE\n\rZWZWA123253H1601\nZWB\nZWC32\nZWD\nZWE11282012\nZWFRev09162009\n\r';
+
+var res2 = pdf417(barcode_data);
+console.log("DMV ID:",res2.id()); /* D621720820090 */
+console.log("First name:",res2.name().first); /* JOHN */
+console.log("Last name:",res2.name().last); /* DOE */
+console.log("Middle name:",res2.name().middle); /* "" */
+console.log("Sex:",res2.sex()); /* MALE, FEMALE, MISSING/INVALID */
+// TODO (remove comment) console.log("DOB:",res2.birthday()); /* Thu Jan 08 1987 00:00:00 GMT-0500 (EST) */
+console.log("Entire object", res2);
 
 
 module.exports.parse = parse;
