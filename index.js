@@ -102,7 +102,7 @@ function getPdf417Parsed(data, separator) {
     }
 
     // get version of aamva (before 2000 or after)
-    var versionMatch = data.match(/(ANSI |AAMVA)\d{6}(\d{2})/);
+    var versionMatch = String(data).match(/(ANSI |AAMVA)\d{6}(\d{2})/);
     /* version 01 year 2000 */
     if(!versionMatch) {
         console.log('unable to get version');
@@ -268,7 +268,7 @@ function getPdf417Parsed(data, separator) {
 
 var pdf417 = function(data, separator) {
     console.log("DATA IS: " + data);
-    console.log("SEPARATOR IS: " + separator);  //undefined
+    console.log("SEPARATOR IS: " + separator);  // Undefined
     var parsedData = getPdf417Parsed(data, separator);
     var rawData = {
         "state": parsedData.DAJ,
