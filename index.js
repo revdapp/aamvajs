@@ -102,7 +102,7 @@ function getPdf417Parsed(data, separator) {
     }
 
     // get version of aamva (before 2000 or after)
-    var versionMatch = data.match(/(ANSI |AAMVA)\d{6}(\d{2})/);
+    var versionMatch = String(data).match(/(ANSI |AAMVA)\d{6}(\d{2})/);
     /* version 01 year 2000 */
     if(!versionMatch) {
         console.log('unable to get version');
