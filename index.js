@@ -208,21 +208,17 @@ function getPdf417Parsed(data, separator) {
         var match = regex.exec(data);
 
         if(match != null) {
-            console.log();
-            console.log("regex is: " + regex);
-            console.log("***MATCHED: " + match);
+            // console.log("regex is: " + regex);
+            // console.log("***MATCHED: " + match);
         } else {
             console.log(regex + " -> not found");
         }
 
         if(match){
-            // TODO: FIX THIS
-            console.log("Match[0] is " + match[0]);
-
+            // TODO: double check this
             if(match[0].slice(3, match[0].length)) {
                 //parsedData[fields[i]] = match[0].slice(3, match[0].length - 1).trim();
                 parsedData[fields[i]] = match[0].slice(3, match[0].length).trim();
-                console.log("NEW parse is: " + parsedData[fields[i]] );
             }
         }
     }
@@ -267,8 +263,6 @@ function getPdf417Parsed(data, separator) {
 };
 
 var pdf417 = function(data, separator) {
-    console.log("DATA IS: " + data);
-    console.log("SEPARATOR IS: " + separator);  // Undefined
     var parsedData = getPdf417Parsed(data, separator);
     var rawData = {
         "state": parsedData.DAJ,
@@ -333,16 +327,20 @@ var pdf417 = function(data, separator) {
 };
 
 
-var barcode_data = '@\n\u001e\rANSI 636045030002DL00410231ZW02720059DLDCANONE\nDCBNONE\nDCDNONE\nDBA11282017\nDCSHELLE\nDCTKYLE JOSEPH\nDCU\nDBD11202012\nDBB11281991\nDBC1\nDAYBLU\nDAU072 in\n6867694\nDAG4107 SW AUSTIN ST\nDAISEATTLE\nDAJWA\nDAK981362109  \nDAQHELLEKJ096Q8\nDCFHELLEKJ096Q832123253H1601\nDCGUSA\nDCHNONE\n\rZWZWA123253H1601\nZWB\nZWC32\nZWD\nZWE11282012\nZWFRev09162009\n\r';
+//------------------------------------------------------------
+// DEBUGGING:
+//------------------------------------------------------------
 
-var res2 = pdf417(barcode_data);
-console.log("DMV ID:",res2.id()); /* D621720820090 */
-console.log("First name:",res2.name().first); /* JOHN */
-console.log("Last name:",res2.name().last); /* DOE */
-console.log("Middle name:",res2.name().middle); /* "" */
-console.log("Sex:",res2.sex()); /* MALE, FEMALE, MISSING/INVALID */
-console.log("DOB:",res2.birthday()); /* Thu Jan 08 1987 00:00:00 GMT-0500 (EST) */
-console.log("Entire object", res2);
+// var barcode_data = '@\n\u001e\rANSI 636045030002DL00410231ZW02720059DLDCANONE\nDCBNONE\nDCDNONE\nDBA11282017\nDCSHELLE\nDCTKYLE JOSEPH\nDCU\nDBD11202012\nDBB11281991\nDBC1\nDAYBLU\nDAU072 in\n6867694\nDAG4107 SW AUSTIN ST\nDAISEATTLE\nDAJWA\nDAK981362109  \nDAQHELLEKJ096Q8\nDCFHELLEKJ096Q832123253H1601\nDCGUSA\nDCHNONE\n\rZWZWA123253H1601\nZWB\nZWC32\nZWD\nZWE11282012\nZWFRev09162009\n\r';
+//
+// var parsedResult = pdf417(barcode_data);
+// console.log("DMV ID:", parsedResult.id()); /* D621720820090 */
+// console.log("First name:", parsedResult.name().first); /* JOHN */
+// console.log("Last name:", parsedResult.name().last); /* DOE */
+// console.log("Middle name:", parsedResult.name().middle); /* "" */
+// console.log("Sex:", parsedResult.sex()); /* MALE, FEMALE, MISSING/INVALID */
+// console.log("DOB:", parsedResult.birthday()); /* Thu Jan 08 1987 00:00:00 GMT-0500 (EST) */
+// console.log("Entire object", parsedResult);
 
 
 module.exports.parse = parse;
