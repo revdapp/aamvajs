@@ -226,7 +226,7 @@ function getPdf417Parsed(data, separator) {
         }
     }
 
-    console.log("Parsed data is: " + parsedData);
+    //console.log("Parsed data is: " + parsedData);
 
     // version 3 putting middle and first names in the same field
     if(parsedData.hasOwnProperty('DCT')) {
