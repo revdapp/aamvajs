@@ -46,23 +46,25 @@ class DefaultScanner extends Scanner {
                 var regex = new RegExp('(' + Scanner.FIELDS[i] + '[0-9a-zA-z ]+' + ')' + '+');
                 var match = regex.exec(data);
 
-                if(match != null) {
-                    console.log();
-                    console.log("regex is: " + regex);
-                    console.log("***MATCHED: " + match);
-                } else {
-                    console.log(regex + " -> not found");
-                }
 
+                //----------------------------------
+                // For debugging:
+                //----------------------------------
+                // if(match != null) {
+                //     console.log("regex is: " + regex);
+                //     console.log("***MATCHED: " + match);
+                // } else {
+                //     console.log(regex + " -> not found");
+                // }
                 if(match){
-                    // TODO: FIX THIS
-                    console.log("Match[0] is " + match[0]);
+                      // TODO: FIX THIS
+                      console.log("Match[0] is " + match[0]);
 
-                    if(match[0].slice(3, match[0].length)) {
-                        //parsedData[Scanner.FIELDS[i]] = match[0].slice(3, match[0].length - 1).trim();
-                        parsedData[Scanner.FIELDS[i]] = match[0].slice(3, match[0].length).trim();
-                        console.log("NEW parse is: " + parsedData[Scanner.FIELDS[i]] );
-                    }
+                      if(match[0].slice(3, match[0].length)) {
+                          //parsedData[Scanner.FIELDS[i]] = match[0].slice(3, match[0].length - 1).trim();
+                          parsedData[Scanner.FIELDS[i]] = match[0].slice(3, match[0].length).trim();
+                          console.log("NEW parse is: " + parsedData[Scanner.FIELDS[i]] );
+                      }
                 }
             }
 

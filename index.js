@@ -207,12 +207,15 @@ function getPdf417Parsed(data, separator) {
         var regex = new RegExp('(' + fields[i] + '[0-9a-zA-z ]+' + ')' + '+');
         var match = regex.exec(data);
 
-        if(match != null) {
-            // console.log("regex is: " + regex);
-            // console.log("***MATCHED: " + match);
-        } else {
-            console.log(regex + " -> not found");
-        }
+        //----------------------------------
+        // For debugging:
+        //----------------------------------
+        // if(match != null) {
+        //     console.log("regex is: " + regex);
+        //     console.log("***MATCHED: " + match);
+        // } else {
+        //     console.log(regex + " -> not found");
+        // }
 
         if(match){
             // TODO: double check this
