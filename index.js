@@ -37,10 +37,17 @@ var stripe = function(data) {
         "dl": res2[3],
         "expiration_date": function() {
             var exp = res2[5].match(/(\d{4})(\d{2})(\d{2})/);
-            exp[1] = parseInt(exp[1]);
-            exp[2] = parseInt(exp[2]);
-            exp[3] = parseInt(exp[3]);
-
+            if(exp[1].startsWith('20')){
+                //Year is first
+                exp[1] = parseInt(exp[1]);
+                exp[2] = parseInt(exp[2]);
+                exp[3] = parseInt(exp[3]);
+            }else{
+                exp = res2[5].match(/(\d{2})(\d{2})(\d{4})/);
+                exp[1] = parseInt(exp[1]);
+                exp[2] = parseInt(exp[2]);
+                exp[3] = parseInt(exp[3]);
+            }
             return (
                 new Date(
                     Date.UTC(exp[3], exp[1], exp[2])
@@ -288,10 +295,17 @@ var pdf417 = function(data, separator) {
         "dl": parsedData.DAQ.replace(' ', ''),
         "expiration_date": function() {
             var exp = parsedData.DBA.match(/(\d{4})(\d{2})(\d{2})/);
-            exp[1] = parseInt(exp[1]);
-            exp[2] = parseInt(exp[2]);
-            exp[3] = parseInt(exp[3]);
-
+            if(exp[1].startsWith('20')){
+                //Year is first
+                exp[1] = parseInt(exp[1]);
+                exp[2] = parseInt(exp[2]);
+                exp[3] = parseInt(exp[3]);
+            }else{
+                exp = parsedData.DBA.match(/(\d{2})(\d{2})(\d{4})/);
+                exp[1] = parseInt(exp[1]);
+                exp[2] = parseInt(exp[2]);
+                exp[3] = parseInt(exp[3]);
+            }
             return (
                 new Date(
                     Date.UTC(exp[3], exp[1], exp[2])
