@@ -224,6 +224,12 @@ function getPdf417Parsed(data, separator) {
 
     if(parsedData.hasOwnProperty('DAA')) {
         var name = parsedData.DAA.split(',');
+
+        // PA License seperated by 
+        if (name.length <= 1){
+            name = parsedData.DAA.split(' ');
+        }
+
         parsedData.DCS = name[0];
         parsedData.DAC = name[1];
         parsedData.DAD = name[2];
