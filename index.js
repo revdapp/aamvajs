@@ -62,7 +62,7 @@ var stripe = function(data) {
         "restrictions": res3[6],
         "endorsments": res3[7],
         "sex": function() {
-            switch(Number(res3[8])) {
+            switch(Number(res3[8]) || res3[8] ) {
                 case 1 || 'M':
                     return "MALE";
                     break;
@@ -293,7 +293,7 @@ var pdf417 = function(data, separator) {
         "restrictions": undefined,
         "endorsments": undefined,
         "sex": function() {
-            switch( Number(parsedData.DBC) ) {
+            switch( Number(parsedData.DBC) || parsedData.DBC ) {
                 case 1 || 'M':
                     return "MALE";
                     break;
