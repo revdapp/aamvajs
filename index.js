@@ -63,14 +63,14 @@ var stripe = function(data) {
         "endorsments": res3[7],
         "sex": function() {
             switch(Number(res3[8])) {
-                case 1:
+                case 1 || 'M':
                     return "MALE";
                     break;
-                case 2:
-                    return "FAMALE";
+                case 2 || 'F':
+                    return "FEMALE";
                     break;
                 default:
-                    return "MISSING/INVALID";
+                    return "UKNOWN";
                     break;
             }
         },
