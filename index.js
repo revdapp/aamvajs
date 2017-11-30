@@ -225,7 +225,7 @@ function getPdf417Parsed(data, separator) {
     if(parsedData.hasOwnProperty('DAA')) {
         var name = parsedData.DAA.split(',');
 
-        // PA License seperated by 
+        // PA License seperated by space
         if (name.length <= 1){
             name = parsedData.DAA.split(' ');
         }
@@ -294,14 +294,14 @@ var pdf417 = function(data, separator) {
         "endorsments": undefined,
         "sex": function() {
             switch( Number(parsedData.DBC) ) {
-                case 1:
+                case 1 || 'M':
                     return "MALE";
                     break;
-                case 2:
+                case 2 || 'F':
                     return "FEMALE";
                     break;
                 default:
-                    return "MISSING/INVALID";
+                    return "UKNOWN";
                     break;
             }
         },
