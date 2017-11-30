@@ -36,7 +36,7 @@ var stripe = function(data) {
         "iso_iin": res2[2],
         "dl": res2[3],
         "expiration_date": function() {
-            var exp = res2[5].match(/(\d{2})(\d{2})(\d{4})/);
+            var exp = res2[5].match(/(\d{4})(\d{2})(\d{2})/);
             exp[1] = parseInt(exp[1]);
             exp[2] = parseInt(exp[2]);
             exp[3] = parseInt(exp[3]);
@@ -287,7 +287,7 @@ var pdf417 = function(data, separator) {
         // Because Michigican puts spaces in their license numbers. Why...
         "dl": parsedData.DAQ.replace(' ', ''),
         "expiration_date": function() {
-            var exp = parsedData.DBA.match(/(\d{2})(\d{2})(\d{4})/);
+            var exp = parsedData.DBA.match(/(\d{4})(\d{2})(\d{2})/);
             exp[1] = parseInt(exp[1]);
             exp[2] = parseInt(exp[2]);
             exp[3] = parseInt(exp[3]);
