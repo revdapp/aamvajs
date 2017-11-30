@@ -35,7 +35,18 @@ var stripe = function(data) {
         "address": res1[5],
         "iso_iin": res2[2],
         "dl": res2[3],
-        "expiration_date": res2[5],
+        "expiration_date": function() {
+            var exp = res2[5].match(/(\d{2})(\d{2})(\d{4})/);
+            exp[1] = parseInt(exp[1]);
+            exp[2] = parseInt(exp[2]);
+            exp[3] = parseInt(exp[3]);
+
+            return (
+                new Date(
+                    Date.UTC(exp[3], exp[1], exp[2])
+                )
+            );
+        },
         "birthday": function() {
             var dob = res2[6].match(/(\d{4})(\d{2})(\d{2})/);
             dob[1] = parseInt(dob[1]);
@@ -275,7 +286,18 @@ var pdf417 = function(data, separator) {
         "iso_iin": undefined,
         // Because Michigican puts spaces in their license numbers. Why...
         "dl": parsedData.DAQ.replace(' ', ''),
-        "expiration_date": parsedData.DBA,
+        "expiration_date": function() {
+            var exp = parsedData.DBA.match(/(\d{2})(\d{2})(\d{4})/);
+            exp[1] = parseInt(exp[1]);
+            exp[2] = parseInt(exp[2]);
+            exp[3] = parseInt(exp[3]);
+
+            return (
+                new Date(
+                    Date.UTC(exp[3], exp[1], exp[2])
+                )
+            );
+        },
         "birthday": function() {
             var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
             dob[1] = parseInt(dob[1]);
