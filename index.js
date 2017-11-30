@@ -62,11 +62,13 @@ var stripe = function(data) {
         "restrictions": res3[6],
         "endorsments": res3[7],
         "sex": function() {
-            switch(Number(res3[8]) || res3[8] ) {
-                case 1 || 'M':
+            switch(parsedData.DBC) {
+                case "1":
+                case 'M':
                     return "MALE";
                     break;
-                case 2 || 'F':
+                case "2":
+                case 'F':
                     return "FEMALE";
                     break;
                 default:
@@ -293,11 +295,13 @@ var pdf417 = function(data, separator) {
         "restrictions": undefined,
         "endorsments": undefined,
         "sex": function() {
-            switch( Number(parsedData.DBC) || parsedData.DBC ) {
-                case 1 || 'M':
+            switch(parsedData.DBC) {
+                case "1":
+                case 'M':
                     return "MALE";
                     break;
-                case 2 || 'F':
+                case "2":
+                case 'F':
                     return "FEMALE";
                     break;
                 default:
