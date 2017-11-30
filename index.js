@@ -230,11 +230,14 @@ function getPdf417Parsed(data, separator) {
         // PA License seperated by space
         if (name.length <= 1){
             name = parsedData.DAA.split(' ');
+            parsedData.DCS = name[2];
+            parsedData.DAC = name[0];
+            parsedData.DAD = name[1];
+        }else{
+            parsedData.DCS = name[0];
+            parsedData.DAC = name[1];
+            parsedData.DAD = name[2];
         }
-
-        parsedData.DCS = name[0];
-        parsedData.DAC = name[1];
-        parsedData.DAD = name[2];
     }
 
     if(parsedData.hasOwnProperty('DAR')) {
