@@ -295,22 +295,22 @@ var pdf417 = function(data, separator) {
         "dl": parsedData.DAQ.replace(' ', ''),
         "expiration_date": function() {
             var exp = parsedData.DBA.match(/(\d{4})(\d{2})(\d{2})/);
+            var date;
             if(exp[1].startsWith('20')){
                 //Year is first
                 exp[1] = parseInt(exp[1]);
                 exp[2] = parseInt(exp[2]);
                 exp[3] = parseInt(exp[3]);
+                date = new Date(Date.UTC(exp[1], (exp[2]-1), (exp[3]+1))).setHours(15,0,0,0);
             }else{
                 exp = parsedData.DBA.match(/(\d{2})(\d{2})(\d{4})/);
                 exp[1] = parseInt(exp[1]);
                 exp[2] = parseInt(exp[2]);
                 exp[3] = parseInt(exp[3]);
+                date = new Date(Date.UTC(exp[3], (exp[1]-1), (exp[2]+1))).setHours(15,0,0,0);
             }
-            return (
-                new Date(
-                    Date.UTC(exp[3], exp[1], exp[2])
-                )
-            );
+
+            return date;
         },
         "birthday": function() {
             var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
@@ -318,11 +318,8 @@ var pdf417 = function(data, separator) {
             dob[2] = parseInt(dob[2]);
             dob[3] = parseInt(dob[3]);
 
-            return (
-                new Date(
-                    Date.UTC(dob[3], dob[1], dob[2])
-                )
-            );
+            // return ( new Date( Date.UTC(dob[3], dob[1], dob[2]) ) );
+            return new Date(Date.UTC(dob[3], (dob[1]-1), (dob[2]+1))).setHours(15,0,0,0);
         },
         "dob": parsedData.DBB,
         "dl_overflow": undefined,
