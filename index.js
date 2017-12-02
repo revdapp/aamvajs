@@ -266,8 +266,8 @@ function getPdf417Parsed(data, separator) {
         // date on 01 is CCYYMMDD while on 07 MMDDCCYY
         parsedData.DBB = (
             parsedData.DBB.substring(4,6) +  // month
-                parsedData.DBB.substring(6,8) +  // day
-                parsedData.DBB.substring(0,4)    // year
+            parsedData.DBB.substring(6,8) +  // day
+            parsedData.DBB.substring(0,4)    // year
         );
     };
     if(Number(version) === 1 && parsedData.hasOwnProperty('DAL')) {
@@ -277,83 +277,88 @@ function getPdf417Parsed(data, separator) {
     return parsedData;
 };
 
+function parseBirthday(DBB) {
+    var dob = DBB.match(/(\d{2})(\d{2})(\d{4})/);
+    dob[1] = parseInt(dob[1]);
+    dob[2] = parseInt(dob[2]);
+    dob[3] = parseInt(dob[3]);
+
+    // return ( new Date( Date.UTC(dob[3], dob[1], dob[2]) ) );
+    return new Date(Date.UTC(dob[3], (dob[1]-1), (dob[2]+1))).setHours(15,0,0,0);
+};
+
+function getGender(DBC) {
+    switch(DBC) {
+        case "1":
+        case 'M':
+            return "MALE";
+            break;
+        case "2":
+        case 'F':
+            return "FEMALE";
+            break;
+        default:
+            return "UKNOWN";
+            break;
+    }
+};
+
+function getExpirationDate(DBA) {
+    var exp = DBA.match(/(\d{4})(\d{2})(\d{2})/);
+    var date;
+    if(exp[1].startsWith('20')){
+        //Year is first
+        exp[1] = parseInt(exp[1]);
+        exp[2] = parseInt(exp[2]);
+        exp[3] = parseInt(exp[3]);
+        date = new Date(Date.UTC(exp[1], (exp[2]-1), (exp[3]+1))).setHours(15,0,0,0);
+    }else{
+        exp = DBA.match(/(\d{2})(\d{2})(\d{4})/);
+        exp[1] = parseInt(exp[1]);
+        exp[2] = parseInt(exp[2]);
+        exp[3] = parseInt(exp[3]);
+        date = new Date(Date.UTC(exp[3], (exp[1]-1), (exp[2]+1))).setHours(15,0,0,0);
+    }
+
+    return date;
+};
+
 var pdf417 = function(data, separator) {
     var parsedData = getPdf417Parsed(data, separator);
-    var rawData = {
-        "state": parsedData.DAJ,
-        "city": parsedData.DAI,
-        "name": function() {
-            return {
+    var rawData = {}
+    if(parsedData){
+        rawData = {
+            "state": parsedData.DAJ,
+            "city": parsedData.DAI,
+            "name": {
                 last: parsedData.DCS,
                 first: parsedData.DAC,
                 middle: parsedData.DAD
-            }
-        },
-        "address": parsedData.DAG,
-        "iso_iin": undefined,
-        // Because Michigican puts spaces in their license numbers. Why...
-        "dl": parsedData.DAQ.replace(' ', ''),
-        "expiration_date": function() {
-            var exp = parsedData.DBA.match(/(\d{4})(\d{2})(\d{2})/);
-            var date;
-            if(exp[1].startsWith('20')){
-                //Year is first
-                exp[1] = parseInt(exp[1]);
-                exp[2] = parseInt(exp[2]);
-                exp[3] = parseInt(exp[3]);
-                date = new Date(Date.UTC(exp[1], (exp[2]-1), (exp[3]+1))).setHours(15,0,0,0);
-            }else{
-                exp = parsedData.DBA.match(/(\d{2})(\d{2})(\d{4})/);
-                exp[1] = parseInt(exp[1]);
-                exp[2] = parseInt(exp[2]);
-                exp[3] = parseInt(exp[3]);
-                date = new Date(Date.UTC(exp[3], (exp[1]-1), (exp[2]+1))).setHours(15,0,0,0);
-            }
-
-            return date;
-        },
-        "birthday": function() {
-            var dob = parsedData.DBB.match(/(\d{2})(\d{2})(\d{4})/);
-            dob[1] = parseInt(dob[1]);
-            dob[2] = parseInt(dob[2]);
-            dob[3] = parseInt(dob[3]);
-
-            // return ( new Date( Date.UTC(dob[3], dob[1], dob[2]) ) );
-            return new Date(Date.UTC(dob[3], (dob[1]-1), (dob[2]+1))).setHours(15,0,0,0);
-        },
-        "dob": parsedData.DBB,
-        "dl_overflow": undefined,
-        "cds_version": undefined,
-        "aamva_version": parsedData.version,
-        "jurisdiction_version": undefined,
-        "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
-        "class": parsedData.DCA,
-        "restrictions": undefined,
-        "endorsments": undefined,
-        "sex": function() {
-            switch(parsedData.DBC) {
-                case "1":
-                case 'M':
-                    return "MALE";
-                    break;
-                case "2":
-                case 'F':
-                    return "FEMALE";
-                    break;
-                default:
-                    return "UKNOWN";
-                    break;
-            }
-        },
-        "height": undefined,
-        "weight": undefined,
-        "hair_color": undefined,
-        "eye_color": undefined,
-        "misc": undefined,
-        "id": function(){
-            return parsedData.DAQ.replace(/[^A-ZA-Z0-9]/g, "");
-        }
-    };
+            },
+            "address": parsedData.DAG,
+            "iso_iin": undefined,
+            // Because Michigican puts spaces in their license numbers. Why...
+            "dl": parsedData.DAQ.replace(' ', ''),
+            "expiration_date": getExpirationDate(parsedData.DBA),
+            "birthday": parseBirthday(parsedData.DBB),
+            "dob": parsedData.DBB,
+            "dl_overflow": undefined,
+            "cds_version": undefined,
+            "aamva_version": parsedData.version,
+            "jurisdiction_version": undefined,
+            "postal_code": parsedData.DAK.match(/\d{-}\d+/)? parsedData.DAK : parsedData.DAK.substring(0,5),
+            "class": parsedData.DCA,
+            "restrictions": undefined,
+            "endorsments": undefined,
+            "sex": getGender(parsedData.DBC),
+            "height": undefined,
+            "weight": undefined,
+            "hair_color": undefined,
+            "eye_color": undefined,
+            "misc": undefined,
+            "id": parsedData.DAQ.replace(/[^A-ZA-Z0-9]/g, ""),
+        };
+    }
 
     return rawData;
 };
