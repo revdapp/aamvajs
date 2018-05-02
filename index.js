@@ -342,6 +342,7 @@ var pdf417 = function(data, separator) {
             "expiration_date": getExpirationDate(parsedData.DBA),
             "birthday": parseBirthday(parsedData.DBB),
             "dob": parsedData.DBB,
+            "dba": parsedData.DBA,
             "dl_overflow": undefined,
             "cds_version": undefined,
             "aamva_version": parsedData.version,
