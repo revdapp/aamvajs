@@ -284,7 +284,7 @@ function parseBirthday(DBB) {
     dob[3] = parseInt(dob[3]);
 
     // return ( new Date( Date.UTC(dob[3], dob[1], dob[2]) ) );
-    return String(dob[3])+String(dob[1])+String(dob[2]);
+    return String(dob[3])+String(dob[1]).padStart(2, '0')+String(dob[2]);
 };
 
 function getGender(DBC) {
@@ -311,13 +311,13 @@ function getExpirationDate(DBA) {
         exp[1] = parseInt(exp[1]);
         exp[2] = parseInt(exp[2]);
         exp[3] = parseInt(exp[3]);
-        date = String(exp[1])+String(exp[2])+String(exp[3])
+        date = String(exp[1])+String(exp[2]).padStart(2, '0')+String(exp[3])
     }else{
         exp = DBA.match(/(\d{2})(\d{2})(\d{4})/);
         exp[1] = parseInt(exp[1]);
         exp[2] = parseInt(exp[2]);
         exp[3] = parseInt(exp[3]);
-        date = String(exp[3])+String(exp[1])+String(exp[2]);
+        date = String(exp[3])+String(exp[1]).padStart(2, '0')+String(exp[2]);
     }
 
     return date;
